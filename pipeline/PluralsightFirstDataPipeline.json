@@ -1,0 +1,77 @@
+{
+	"name": "PluralsightFirstDataPipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Wait3Secs",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": {
+						"value": "@pipeline().parameters.iWaitSecs",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "DumpToBlob",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Wait3Secs",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "az4818ADFSourceAzureSQLDatabase_MATH",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "az4818ADFSinkBlobProductsJSON",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"parameters": {
+			"iWaitSecs": {
+				"type": "int",
+				"defaultValue": 3
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-05-28T12:37:18Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

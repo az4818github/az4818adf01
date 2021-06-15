@@ -1,0 +1,19 @@
+{
+	"name": "az4818ADFSinkBlobProductsJSON",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "az4818ADFLinkedServiceBlob",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "az4818blobstoragecontainer1"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

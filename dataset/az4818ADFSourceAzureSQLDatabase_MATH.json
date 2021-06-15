@@ -1,0 +1,34 @@
+{
+	"name": "az4818ADFSourceAzureSQLDatabase_MATH",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "az4818ADFLinkedServiceAzureSqlDatabase_MATH",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "MY_VALUE",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "MY_DIVISION",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "MY_TIME",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "TBL_CONTROL_CARD"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,32 @@
+{
+	"name": "az4818ADFDataflowSQLDatabase_MATH_CalcCol",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "az4818ADFSourceAzureSQLDatabase_MATH",
+						"type": "DatasetReference"
+					},
+					"name": "DataFlowvwPrimeNumberStats"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "az4818ADFSinkBlobProductsJSON",
+						"type": "DatasetReference"
+					},
+					"name": "DataFlowSinkPrimeNumberCacCol"
+				}
+			],
+			"transformations": [
+				{
+					"name": "DataflowPrimeNumberDerivedColumn"
+				}
+			],
+			"script": "source(output(\n\t\tMY_VALUE as long,\n\t\tMY_DIVISION as long,\n\t\tMY_TIME as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DataFlowvwPrimeNumberStats\nDataFlowvwPrimeNumberStats derive(NewCalcCol = MY_VALUE+MY_DIVISION) ~> DataflowPrimeNumberDerivedColumn\nDataflowPrimeNumberDerivedColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['DataFlowPrimeNumberCalCol.json'],\n\ttruncate: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tmapColumn(\n\t\tMY_VALUE,\n\t\tMY_DIVISION,\n\t\tNewCalcCol\n\t),\n\tpartitionBy('hash', 1)) ~> DataFlowSinkPrimeNumberCacCol"
+		}
+	}
+}

@@ -1,0 +1,9 @@
+{
+	"name": "az4818adf",
+	"location": "northeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "a9f0e483-4228-485d-a603-bda1674a6544",
+		"tenantId": "8e5bfd29-48dc-4727-a2ba-a25443167cd4"
+	}
+}
