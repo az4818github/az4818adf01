@@ -1,0 +1,21 @@
+{
+	"name": "ds_az4818databaseserver_ADF_DummySingleColumn",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_az4818databaseserver_ADF",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "col1",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "MSSqlTips6886",
+			"table": "DummySingleColumn"
+		}
+	}
+}
