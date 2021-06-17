@@ -1,5 +1,5 @@
 {
-	"name": "mssqltips6884csv2sql",
+	"name": "mssqltips6886csv2sql",
 	"properties": {
 		"description": "import data from csv on blob storage to an azure sql database",
 		"annotations": []
