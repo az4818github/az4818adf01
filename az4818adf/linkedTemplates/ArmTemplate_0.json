@@ -1,0 +1,553 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "az4818adf"
+		},
+		"az4818ADFLinkedServiceAzureSqlDatabase_MATH_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'az4818ADFLinkedServiceAzureSqlDatabase_MATH'"
+		},
+		"az4818ADFLinkedServiceBlob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'az4818ADFLinkedServiceBlob'"
+		},
+		"ls_az4818blobstorage_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_az4818blobstorage'"
+		},
+		"ls_az4818databaseserver_ADF_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_az4818databaseserver_ADF'"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/default')]",
+			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"preventDataExfiltration": false
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AutoResolveIntegrationRuntime')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 0
+						}
+					}
+				},
+				"managedVirtualNetwork": {
+					"type": "ManagedVirtualNetworkReference",
+					"referenceName": "default"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/managedVirtualNetworks/default')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az4818ADFLinkedServiceAzureSqlDatabase_MATH')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('az4818ADFLinkedServiceAzureSqlDatabase_MATH_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az4818ADFLinkedServiceBlob')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('az4818ADFLinkedServiceBlob_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_az4818blobstorage')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "VS Enterprise / az4818blobstorage ",
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_az4818blobstorage_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_az4818databaseserver_ADF')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "az4818databaseserver-sql.database.windows.net / adminuser /ADF",
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_az4818databaseserver_ADF_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az4818ADFSinkBlobProductsJSON')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az4818ADFLinkedServiceBlob",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "az4818blobstoragecontainer1"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az4818ADFLinkedServiceBlob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az4818ADFSourceAzureSQLDatabase_MATH')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "az4818ADFLinkedServiceAzureSqlDatabase_MATH",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "MY_VALUE",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "MY_DIVISION",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "MY_TIME",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "TBL_CONTROL_CARD"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/az4818ADFLinkedServiceAzureSqlDatabase_MATH')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_az4818blobstoragecontainer1_DummySingleColumnWithHeader')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_az4818blobstorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "DummySingleColumnWithHeader.csv",
+						"container": "az4818blobstoragecontainer1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "col1",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_az4818blobstorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_az4818databaseserver_ADF_DummySingleColumn')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_az4818databaseserver_ADF",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "col1",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "MSSqlTips6886",
+					"table": "DummySingleColumn"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_az4818databaseserver_ADF')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PluralsightFirstDataPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Wait3Secs",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": {
+								"value": "@pipeline().parameters.iWaitSecs",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "DumpToBlob",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Wait3Secs",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "az4818ADFSourceAzureSQLDatabase_MATH",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "az4818ADFSinkBlobProductsJSON",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"parameters": {
+					"iWaitSecs": {
+						"type": "int",
+						"defaultValue": 3
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-05-28T12:37:18Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/az4818ADFSourceAzureSQLDatabase_MATH')]",
+				"[concat(variables('factoryId'), '/datasets/az4818ADFSinkBlobProductsJSON')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/mssqltips6886csv2sql')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "import data from csv on blob storage to an azure sql database",
+				"activities": [
+					{
+						"name": "copydata_mssqltips6886",
+						"description": "copy from blob storage csv to azure sql database table",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "delete from [MSSqlTips6886].[DummySingleColumn]",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "col1",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "col1",
+											"type": "String",
+											"physicalType": "nvarchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_az4818blobstoragecontainer1_DummySingleColumnWithHeader",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_az4818databaseserver_ADF_DummySingleColumn",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_az4818blobstoragecontainer1_DummySingleColumnWithHeader')]",
+				"[concat(variables('factoryId'), '/datasets/ds_az4818databaseserver_ADF_DummySingleColumn')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/az4818ADFDataflowSQLDatabase_MATH_CalcCol')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "az4818ADFSourceAzureSQLDatabase_MATH",
+								"type": "DatasetReference"
+							},
+							"name": "DataFlowvwPrimeNumberStats"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "az4818ADFSinkBlobProductsJSON",
+								"type": "DatasetReference"
+							},
+							"name": "DataFlowSinkPrimeNumberCacCol"
+						}
+					],
+					"transformations": [
+						{
+							"name": "DataflowPrimeNumberDerivedColumn"
+						}
+					],
+					"script": "source(output(\n\t\tMY_VALUE as long,\n\t\tMY_DIVISION as long,\n\t\tMY_TIME as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> DataFlowvwPrimeNumberStats\nDataFlowvwPrimeNumberStats derive(NewCalcCol = MY_VALUE+MY_DIVISION) ~> DataflowPrimeNumberDerivedColumn\nDataflowPrimeNumberDerivedColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['DataFlowPrimeNumberCalCol.json'],\n\ttruncate: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tmapColumn(\n\t\tMY_VALUE,\n\t\tMY_DIVISION,\n\t\tNewCalcCol\n\t),\n\tpartitionBy('hash', 1)) ~> DataFlowSinkPrimeNumberCacCol"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/az4818ADFSourceAzureSQLDatabase_MATH')]",
+				"[concat(variables('factoryId'), '/datasets/az4818ADFSinkBlobProductsJSON')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PluralsightFirstDataPipeline2')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "data flow example",
+				"activities": [
+					{
+						"name": "PluralsightFirstDataPipeline2",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "az4818ADFDataflowSQLDatabase_MATH_CalcCol",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"DataFlowvwPrimeNumberStats": {},
+									"DataFlowSinkPrimeNumberCacCol": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"annotations": [],
+				"lastPublishTime": "2021-05-28T13:23:06Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/az4818ADFDataflowSQLDatabase_MATH_CalcCol')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ADF_DumpToBlob_Trigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "PluralsightFirstDataPipeline",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2021-05-18T12:05:00Z",
+						"timeZone": "UTC",
+						"schedule": {
+							"minutes": [
+								35
+							],
+							"hours": [
+								13
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/PluralsightFirstDataPipeline')]"
+			]
+		}
+	]
+}

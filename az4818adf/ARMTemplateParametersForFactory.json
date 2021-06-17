@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "az4818adf"
+		},
+		"az4818ADFLinkedServiceAzureSqlDatabase_MATH_connectionString": {
+			"value": ""
+		},
+		"az4818ADFLinkedServiceBlob_connectionString": {
+			"value": ""
+		},
+		"ls_az4818blobstorage_connectionString": {
+			"value": ""
+		},
+		"ls_az4818databaseserver_ADF_connectionString": {
+			"value": ""
+		}
+	}
+}

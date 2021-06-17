@@ -1,0 +1,70 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "az4818adf"
+		},
+		"az4818ADFLinkedServiceAzureSqlDatabase_MATH_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'az4818ADFLinkedServiceAzureSqlDatabase_MATH'"
+		},
+		"az4818ADFLinkedServiceBlob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'az4818ADFLinkedServiceBlob'"
+		},
+		"ls_az4818blobstorage_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_az4818blobstorage'"
+		},
+		"ls_az4818databaseserver_ADF_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_az4818databaseserver_ADF'"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "az4818adf_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"az4818ADFLinkedServiceAzureSqlDatabase_MATH_connectionString": {
+						"value": "[parameters('az4818ADFLinkedServiceAzureSqlDatabase_MATH_connectionString')]"
+					},
+					"az4818ADFLinkedServiceBlob_connectionString": {
+						"value": "[parameters('az4818ADFLinkedServiceBlob_connectionString')]"
+					},
+					"ls_az4818blobstorage_connectionString": {
+						"value": "[parameters('ls_az4818blobstorage_connectionString')]"
+					},
+					"ls_az4818databaseserver_ADF_connectionString": {
+						"value": "[parameters('ls_az4818databaseserver_ADF_connectionString')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
