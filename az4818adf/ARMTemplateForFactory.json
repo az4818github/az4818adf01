@@ -192,6 +192,7 @@
 							"sink": {
 								"type": "AzureSqlSink",
 								"preCopyScript": "delete from [MSSqlTips6886].[DummySingleColumn]",
+								"writeBehavior": "insert",
 								"disableMetricsCollection": false
 							},
 							"enableStaging": false,
@@ -461,6 +462,7 @@
 						"frequency": "Day",
 						"interval": 1,
 						"startTime": "2021-05-18T12:05:00Z",
+						"endTime": "2021-07-16T00:00:00Z",
 						"timeZone": "UTC",
 						"schedule": {
 							"minutes": [
@@ -544,9 +546,7 @@
 			"name": "[concat(parameters('factoryName'), '/default')]",
 			"type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
 			"apiVersion": "2018-06-01",
-			"properties": {
-				"preventDataExfiltration": false
-			},
+			"properties": {},
 			"dependsOn": []
 		}
 	]
